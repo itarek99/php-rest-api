@@ -11,4 +11,9 @@ class ErrorHandler {
       'line' => $exception->getLine()
     ]);
   }
+
+  public static function handleError($errno, $errstr, $errfile, $errline) : void {
+    throw new ErrorException($errstr, 0, $errno, $errfile, $errline);
+  }
 }
+

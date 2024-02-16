@@ -1,4 +1,4 @@
-# PHP REST API
+# PHP Rest Api
 
 Practice PHP OOP.
 
