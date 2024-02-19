@@ -1,4 +1,7 @@
 <?php
+namespace TODO;
+
+use PDO;
 
 class TaskGateway {
   private $conn;
@@ -7,9 +10,10 @@ class TaskGateway {
     $this->conn = $database->getConnection();
   }
 
-  public function getAll() {
-    $sql = 'SELECT * FROM tasks';
-    $stmt = $this->conn->query($sql);
+  public function getAll( $userId ) {
+    $sql = 'SELECT * FROM tasks WHERE user_id = :user_id';
+    $stmt = $this->conn->prepare($sql);
+    $stmt->execute(['user_id' => $userId]);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
@@ -31,7 +35,7 @@ class TaskGateway {
     return true;
   }
 
-  public function create($data) {
+  public function create($data, $userId) {
     $errors = $this->getValidationErrors($data);
     if (!empty($errors)) {
       http_response_code(422);
@@ -39,7 +43,8 @@ class TaskGateway {
       exit;
     }
 
-    $sql = 'INSERT INTO tasks ( description ) VALUES ( :description )';
+    $sql = 'INSERT INTO tasks ( description, user_id ) VALUES ( :description, :user_id )';
+    $data['user_id'] = $userId;
     $stmt = $this->conn->prepare($sql);
     $stmt->execute($data);
     return $this->conn->lastInsertId();

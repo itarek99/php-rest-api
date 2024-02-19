@@ -1,4 +1,9 @@
 <?php
+namespace TODO;
+
+use PDO;
+
+use TODO\ErrorHandler;
 
 use Firebase\JWT\JWT;
 
@@ -60,7 +65,7 @@ class AuthController {
         
     } catch (PDOException $e) {
         if ($e->errorInfo[1] == 1062) { 
-            http_response_code(400); 
+            http_response_code(400);
             echo json_encode(['message' => 'Email is already in use']);
         } else {
             

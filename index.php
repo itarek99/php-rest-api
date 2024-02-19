@@ -1,22 +1,25 @@
 <?php
+use TODO\Database;
+use TODO\TaskGateway;
+use TODO\TasksController;
+use TODO\AuthController;
+use TODO\ErrorHandler;
+
 require_once 'vendor/autoload.php';
-require_once __DIR__ . '/vendor/autoload.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
-spl_autoload_register(function ($class) {
-    require_once __DIR__ . '/src/' . $class . '.php';
-});
+set_error_handler("TODO\\ErrorHandler::handleError");
+set_exception_handler("TODO\\ErrorHandler::handleException");
 
-set_error_handler("ErrorHandler::handleError");
-set_exception_handler("ErrorHandler::handleException");
 header('Content-Type: application/json; charset=utf-8');
 
 $parts = explode('/', $_SERVER['REQUEST_URI']);
 $database = new Database('localhost', 'oop', 'root', 'root');
 
-if ($parts[1] === 'tasks') {
+try {
+    if ( isset($parts[1]) && $parts[1] === 'tasks') {
     $id = $parts[2]??null;
     $taskGateway = new TaskGateway($database);
     $taskController = new TasksController($taskGateway);
@@ -27,4 +30,13 @@ if ($parts[1] === 'tasks') {
 } else {
     http_response_code(404);
     exit;
+}
+} catch (Throwable $e) {
+    http_response_code(500);
+    echo json_encode([
+        'code' => $e->getCode(),
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine()
+    ]);
 }
