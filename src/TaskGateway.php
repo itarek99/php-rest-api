@@ -1,4 +1,5 @@
 <?php
+
 namespace TODO;
 
 use PDO;
@@ -10,7 +11,7 @@ class TaskGateway {
     $this->conn = $database->getConnection();
   }
 
-  public function getAll( $userId ) {
+  public function getAll($userId) {
     $sql = 'SELECT * FROM tasks WHERE user_id = :user_id';
     $stmt = $this->conn->prepare($sql);
     $stmt->execute(['user_id' => $userId]);
@@ -63,8 +64,8 @@ class TaskGateway {
     $stmt->execute(['id' => $id, 'description' => $data['description']]);
 
     if ($stmt->rowCount() === 0) {
-       return false;
-    } 
+      return false;
+    }
     return $id;
   }
 
@@ -75,4 +76,4 @@ class TaskGateway {
     }
     return $errors;
   }
-} 
+}
